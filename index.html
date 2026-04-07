@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You ❤️</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Georgia', serif;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  color:white;
+  overflow:hidden;
+}
+
+/* Layout */
+.screen{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  text-align:center;
+}
+
+/* Glow title */
+.glowName{
+  font-size:50px;
+  animation:glow 2s infinite alternate;
+}
+@keyframes glow{
+  from{text-shadow:0 0 10px #fff;}
+  to{text-shadow:0 0 40px #ff4d6d;}
+}
+
+/* Envelope */
+.envelope{
+  font-size:130px;
+  margin-top:30px;
+  cursor:pointer;
+  transition:0.4s;
+}
+.envelope:hover{
+  transform:scale(1.1) rotate(-6deg);
+}
+
+.subtitle{opacity:0.8;}
+
+/* Glass Card */
+.card{
+  position:relative;
+  width:700px;
+  padding:40px;
+  border-radius:30px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.05));
+  backdrop-filter: blur(30px);
+  border:1px solid rgba(255,255,255,0.3);
+  box-shadow:0 10px 40px rgba(0,0,0,0.7), inset 0 0 20px rgba(255,255,255,0.15);
+}
+
+/* Shine */
+.card::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:-70%;
+  width:50%;
+  height:100%;
+  background:linear-gradient(120deg,rgba(255,255,255,0.5),transparent);
+  transform:skewX(-20deg);
+  animation:shine 5s infinite;
+}
+@keyframes shine{
+  0%{left:-70%;}
+  100%{left:120%;}
+}
+
+/* Text */
+#text,#finalText{
+  text-align:left;
+  line-height:1.9;
+  font-size:18px;
+  white-space:pre-line;
+}
+
+/* Button */
+button{
+  margin-top:25px;
+  padding:14px 30px;
+  border:none;
+  border-radius:30px;
+  background:#ff4d6d;
+  color:white;
+  cursor:pointer;
+  animation:pulse 1.5s infinite;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 10px #ff4d6d;}
+  50%{box-shadow:0 0 25px #ff4d6d;}
+  100%{box-shadow:0 0 10px #ff4d6d;}
+}
+
+/* Stars */
+.star{
+  position:absolute;
+  width:2px;
+  height:2px;
+  background:white;
+  opacity:0.6;
+}
+
+/* Floating hearts */
+.floatHeart{
+  position:absolute;
+  bottom:0;
+  font-size:16px;
+  animation:floatUp 6s linear infinite;
+}
+@keyframes floatUp{
+  to{transform:translateY(-100vh); opacity:0;}
+}
+
+/* Burst hearts */
+.heart{
+  position:absolute;
+  font-size:22px;
+  animation:explode 1s forwards;
+}
+@keyframes explode{
+  to{
+    transform:translate(var(--x),var(--y));
+    opacity:0;
+  }
+}
+
+/* Cursor spark */
+.spark{
+  position:absolute;
+  width:5px;
+  height:5px;
+  background:white;
+  border-radius:50%;
+  pointer-events:none;
+  animation:sparkFade 0.5s forwards;
+}
+@keyframes sparkFade{
+  to{opacity:0; transform:scale(2);}
+}
+</style>
+</head>
+
+<body>
+
+<!-- INTRO -->
+<div class="screen" id="intro">
+  <div class="glowName">For You, Bubu ❤️</div>
+  <div class="envelope" onclick="openLetter()">💌</div>
+  <div class="subtitle">Turn your sound on… 🎵</div>
+</div>
+
+<!-- LETTER -->
+<div class="screen" id="letterScreen" style="display:none;">
+  <div class="card">
+    <h2>My Letter ❤️</h2>
+    <div id="text"></div>
+    <button onclick="nextStep()">Continue 💖</button>
+  </div>
+</div>
+
+<!-- FINAL -->
+<div class="screen" id="finalScreen" style="display:none;">
+  <div class="card">
+    <h2>Thank You ❤️</h2>
+    <div id="finalText"></div>
+  </div>
+</div>
+
+<audio id="music" loop preload="auto">
+  <source src="https://files.catbox.moe/8g9x0x.mp3">
+</audio>
+
+<script>
+/* Stars */
+for(let i=0;i<120;i++){
+ let s=document.createElement("div");
+ s.className="star";
+ s.style.left=Math.random()*100+"vw";
+ s.style.top=Math.random()*100+"vh";
+ document.body.appendChild(s);
+}
+
+/* Floating hearts */
+setInterval(()=>{
+ let h=document.createElement("div");
+ h.className="floatHeart";
+ h.innerHTML="❤️";
+ h.style.left=Math.random()*100+"vw";
+ document.body.appendChild(h);
+ setTimeout(()=>h.remove(),6000);
+},700);
+
+/* Cursor sparkle */
+document.addEventListener("mousemove",e=>{
+ let s=document.createElement("div");
+ s.className="spark";
+ s.style.left=e.pageX+"px";
+ s.style.top=e.pageY+"px";
+ document.body.appendChild(s);
+ setTimeout(()=>s.remove(),500);
+});
+
+/* 🎬 MUSIC FADE-IN */
+let musicStarted=false;
+
+function startMusic(){
+ if(!musicStarted){
+  let music=document.getElementById("music");
+  music.volume=0;
+  music.play().catch(()=>{});
+
+  let vol=0;
+  let fade=setInterval(()=>{
+    if(vol<1){
+      vol+=0.02;
+      music.volume=vol;
+    }else clearInterval(fade);
+  },100);
+
+  musicStarted=true;
+ }
+}
+
+/* Open */
+function openLetter(){
+ startMusic();
+ document.getElementById("intro").style.display="none";
+ document.getElementById("letterScreen").style.display="flex";
+ type();
+}
+
+/* 🎬 SYNC TYPING */
+const msg=`My Dearest Bubu,
+
+Thank you for understanding me…
+for forgiving me…
+and for staying.
+
+You are my peace, my comfort,
+and the most beautiful part of my life.
+
+I never want to be the reason behind your sadness.
+
+I just want to see you smile…
+always ❤️`;
+
+let i=0;
+function type(){
+ if(i<msg.length){
+  let char=msg.charAt(i);
+  document.getElementById("text").innerHTML+=char;
+
+  let delay=22;
+  if(char==="."||char===","||char==="\n") delay=300;
+  if(char==="❤️") delay=500;
+
+  i++;
+  setTimeout(type,delay);
+ }
+}
+
+/* Next */
+function nextStep(){
+ for(let i=0;i<30;i++){
+  let h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML="❤️";
+  h.style.left=(window.innerWidth/2)+"px";
+  h.style.top=(window.innerHeight/2)+"px";
+  h.style.setProperty('--x',(Math.random()*250-125)+"px");
+  h.style.setProperty('--y',(Math.random()*250-125)+"px");
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),1000);
+ }
+
+ setTimeout(()=>{
+  document.getElementById("letterScreen").style.display="none";
+  document.getElementById("finalScreen").style.display="flex";
+  typeFinal();
+ },800);
+}
+
+/* Final typing */
+const finalMsg=`Thank you for giving me another chance.
+
+I promise to take care of your heart,
+and to always try to keep you happy.
+
+Stay with me… always ❤️`;
+
+let j=0;
+function typeFinal(){
+ if(j<finalMsg.length){
+  let char=finalMsg.charAt(j);
+  document.getElementById("finalText").innerHTML+=char;
+
+  let delay=22;
+  if(char==="."||char===","||char==="\n") delay=300;
+  if(char==="❤️") delay=500;
+
+  j++;
+  setTimeout(typeFinal,delay);
+ }
+}
+</script>
+
+</body>
+</html>
